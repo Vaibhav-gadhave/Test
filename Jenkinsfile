@@ -1,50 +1,25 @@
 pipeline {
-    agent any
-
-    environment {
-        DOCKERHUB_CREDENTIALS = credentials('dockerhub_credentials')
-        DOCKER_IMAGE = 'vvgadhave/test1'
-        DOCKERFILE_PATH = '.'  // Set to the directory containing your Dockerfile
+  agent any
+  environment {
+    DOCKERHUB_CREDENTIALS = credentials('Jenkins')
+  }
+  stages {
+    stage('Building Docker Image') {
+      steps {
+        sh 'docker build -t jenkins-docker-hub .'
+        sh 'docker tag jenkins-docker-hub vvgadhave/jenkins-docker'
+      }
     }
-
-    stages {
-        stage('Build Docker Image') {
-            steps {
-                script {
-                    // Build Docker image
-                    sh "docker build -t ${DOCKER_IMAGE} -f ${DOCKERFILE_PATH}/Dockerfile ${DOCKERFILE_PATH}"
-                }
-            }
-        }
-
-        stage('Login to Docker Hub') {
-            steps {
-                script {
-                    // Extract Docker Hub credentials
-                    withCredentials([usernamePassword(credentialsId: DOCKERHUB_CREDENTIALS, usernameVariable: 'DOCKERHUB_USERNAME', passwordVariable: 'DOCKERHUB_PASSWORD')]) {
-                        // Login to Docker Hub
-                        sh "docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD"
-                    }
-                }
-            }
-        }
-
-        stage('Push Docker Image') {
-            steps {
-                script {
-                    // Push Docker image to Docker Hub
-                    sh "docker push ${DOCKER_IMAGE}"
-                }
-            }
-        }
+    stage('Login Into Docker') {
+      steps {
+        sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+      }
     }
-
-    post {
-        success {
-            echo 'Pipeline succeeded! Docker image built and pushed to Docker Hub.'
-        }
-        failure {
-            echo 'Pipeline failed. Check the logs for details.'
-        }
+    stage('Push Image to Hub') {
+      steps {
+        sh 'docker push vvgadhave/jenkins-docker'
+      }
     }
+  }
 }
+
