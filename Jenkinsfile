@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         DOCKERHUB_CREDENTIALS = credentials('dockerhub_credentials')
-        DOCKER_IMAGE = 'vvgadhave@gmail.com/test1'
+        DOCKER_IMAGE = 'vvgadhave/test1'
         DOCKERFILE_PATH = '.'  // Set to the directory containing your Dockerfile
     }
 
