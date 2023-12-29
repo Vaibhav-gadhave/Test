@@ -2,12 +2,9 @@ pipeline {
     agent any
 
     environment {
-        // Define the Docker Hub credentials ID
-        DOCKERHUB_CREDENTIALS = credentials('DOCKER_HUB_CREDENTIALS_ID')
-        // Define the Docker image name and tag
-        DOCKER_IMAGE = 'vvgadhave@gmail.com/testimage'
-        // Define the Dockerfile path (if not in the project root)
-        DOCKERFILE_PATH = '.' // Set to the directory containing your Dockerfile
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub_credentials')
+        DOCKER_IMAGE = 'vvgadhave@gmail.com/test1'
+        DOCKERFILE_PATH = '.'  // Set to the directory containing your Dockerfile
     }
 
     stages {
@@ -15,7 +12,7 @@ pipeline {
             steps {
                 script {
                     // Build Docker image
-                    docker.build(DOCKER_IMAGE, "-f ${/var/jenkins_home/workspace/Test/}/Dockerfile ${.}")
+                    sh "docker build -t ${DOCKER_IMAGE} -f ${DOCKERFILE_PATH}/Dockerfile ${DOCKERFILE_PATH}"
                 }
             }
         }
@@ -36,9 +33,7 @@ pipeline {
             steps {
                 script {
                     // Push Docker image to Docker Hub
-                    docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-credentials-id') {
-                        sh "docker push ${DOCKER_IMAGE}"
-                    }
+                    sh "docker push ${DOCKER_IMAGE}"
                 }
             }
         }
