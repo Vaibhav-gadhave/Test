@@ -7,9 +7,9 @@ RUN apt-get update \
     && apt-get -y install net-tools 
 
 # Install Docker
-RUN curl -fsSL https://get.docker.com/ | sh
+#RUN curl -fsSL https://get.docker.com/ | sh
 
 # Add the Jenkins user to the docker group
-RUN usermod -aG docker jenkins
+#RUN usermod -aG docker jenkins
 
 USER jenkins
